@@ -1,0 +1,9 @@
+{
+  "name": "termwidth-tests-node-runner",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "string-width": "^7.2.0",
+    "wcwidth": "^1.0.1"
+  }
+}

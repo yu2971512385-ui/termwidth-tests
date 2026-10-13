@@ -1,0 +1,368 @@
+{
+  "version": 1,
+  "unicode_version": "16.0",
+  "rule": "Measure in grapheme clusters (UAX #29). A cluster is 2 columns if it is an emoji presentation sequence (UTS #51), a regional indicator, or begins with an East_Asian_Width of Wide or Fullwidth (UAX #11); 0 if it consists only of zero-width characters; 1 otherwise.",
+  "vectors": [
+    {
+      "id": "ascii-empty",
+      "codepoints": [],
+      "text": "",
+      "width": 0,
+      "category": "ascii",
+      "why": "Nothing to draw."
+    },
+    {
+      "id": "ascii-word",
+      "codepoints": [
+        "0068",
+        "0065",
+        "006C",
+        "006C",
+        "006F"
+      ],
+      "text": "hello",
+      "width": 5,
+      "category": "ascii",
+      "why": "One column per printable ASCII character."
+    },
+    {
+      "id": "latin1-precomposed",
+      "codepoints": [
+        "0063",
+        "0061",
+        "0066",
+        "00E9"
+      ],
+      "text": "café",
+      "width": 4,
+      "category": "latin",
+      "why": "U+00E9 is a single Narrow character."
+    },
+    {
+      "id": "latin1-combining",
+      "codepoints": [
+        "0063",
+        "0061",
+        "0066",
+        "0065",
+        "0301"
+      ],
+      "text": "café",
+      "width": 4,
+      "category": "combining",
+      "why": "U+0301 joins the preceding cluster and adds no column."
+    },
+    {
+      "id": "combining-stacked",
+      "codepoints": [
+        "0065",
+        "0301",
+        "0302",
+        "0303"
+      ],
+      "text": "é̂̃",
+      "width": 1,
+      "category": "combining",
+      "why": "Any number of combining marks still render over one base character."
+    },
+    {
+      "id": "cjk-han",
+      "codepoints": [
+        "65E5",
+        "672C",
+        "8A9E"
+      ],
+      "text": "日本語",
+      "width": 6,
+      "category": "east-asian",
+      "why": "East_Asian_Width=Wide, two columns each."
+    },
+    {
+      "id": "cjk-hangul-syllables",
+      "codepoints": [
+        "D55C",
+        "AD6D",
+        "C5B4"
+      ],
+      "text": "한국어",
+      "width": 6,
+      "category": "east-asian",
+      "why": "Precomposed Hangul syllables are Wide."
+    },
+    {
+      "id": "cjk-fullwidth-latin",
+      "codepoints": [
+        "FF46",
+        "FF57"
+      ],
+      "text": "ｆｗ",
+      "width": 4,
+      "category": "east-asian",
+      "why": "East_Asian_Width=Fullwidth."
+    },
+    {
+      "id": "cjk-halfwidth-kana",
+      "codepoints": [
+        "FF76",
+        "FF9E"
+      ],
+      "text": "ｶﾞ",
+      "width": 1,
+      "category": "east-asian",
+      "why": "U+FF9E is Grapheme_Extend, so it joins the halfwidth katakana before it into one cluster; that cluster starts Halfwidth, so one column."
+    },
+    {
+      "id": "hangul-jamo-composing",
+      "codepoints": [
+        "1100",
+        "1161",
+        "11A8"
+      ],
+      "text": "각",
+      "width": 2,
+      "category": "east-asian",
+      "why": "The leading jamo is Wide; the medial and trailing jamo compose onto it."
+    },
+    {
+      "id": "emoji-presentation-default",
+      "codepoints": [
+        "1F4A1"
+      ],
+      "text": "💡",
+      "width": 2,
+      "category": "emoji",
+      "why": "U+1F4A1 has Emoji_Presentation=Yes, so it is an emoji without a selector."
+    },
+    {
+      "id": "emoji-text-default-bare",
+      "codepoints": [
+        "2764"
+      ],
+      "text": "❤",
+      "width": 1,
+      "category": "emoji",
+      "why": "U+2764 has Emoji_Presentation=No: on its own it is the text dingbat."
+    },
+    {
+      "id": "emoji-text-default-vs16",
+      "codepoints": [
+        "2764",
+        "FE0F"
+      ],
+      "text": "❤️",
+      "width": 2,
+      "category": "emoji",
+      "why": "VS16 requests emoji presentation (UTS #51), drawn in two columns."
+    },
+    {
+      "id": "emoji-warning-vs16",
+      "codepoints": [
+        "26A0",
+        "FE0F"
+      ],
+      "text": "⚠️",
+      "width": 2,
+      "category": "emoji",
+      "why": "Same rule as U+2764: the selector makes it an emoji."
+    },
+    {
+      "id": "emoji-vs15-text",
+      "codepoints": [
+        "2764",
+        "FE0E"
+      ],
+      "text": "❤︎",
+      "width": 1,
+      "category": "emoji",
+      "why": "VS15 requests text presentation, which stays one column."
+    },
+    {
+      "id": "emoji-zwj-family",
+      "codepoints": [
+        "1F468",
+        "200D",
+        "1F469",
+        "200D",
+        "1F467",
+        "200D",
+        "1F466"
+      ],
+      "text": "👨‍👩‍👧‍👦",
+      "width": 2,
+      "category": "emoji",
+      "why": "A ZWJ sequence is one grapheme cluster and one glyph, however many people it joins."
+    },
+    {
+      "id": "emoji-zwj-rainbow-flag",
+      "codepoints": [
+        "1F3F3",
+        "FE0F",
+        "200D",
+        "1F308"
+      ],
+      "text": "🏳️‍🌈",
+      "width": 2,
+      "category": "emoji",
+      "why": "A ZWJ sequence carrying a variation selector is still one glyph."
+    },
+    {
+      "id": "emoji-skin-tone",
+      "codepoints": [
+        "1F44D",
+        "1F3FD"
+      ],
+      "text": "👍🏽",
+      "width": 2,
+      "category": "emoji",
+      "why": "A skin tone modifier joins the preceding emoji rather than adding a glyph."
+    },
+    {
+      "id": "emoji-regional-indicator-pair",
+      "codepoints": [
+        "1F1EF",
+        "1F1F5"
+      ],
+      "text": "🇯🇵",
+      "width": 2,
+      "category": "emoji",
+      "why": "Two regional indicators form one flag; UTS #51 gives the pair emoji presentation."
+    },
+    {
+      "id": "emoji-regional-indicator-lone",
+      "codepoints": [
+        "1F1EF"
+      ],
+      "text": "🇯",
+      "width": 2,
+      "category": "emoji",
+      "why": "A lone regional indicator is still drawn as an emoji letter tile."
+    },
+    {
+      "id": "emoji-in-sentence",
+      "codepoints": [
+        "0061",
+        "1F468",
+        "200D",
+        "1F469",
+        "200D",
+        "1F467",
+        "200D",
+        "1F466",
+        "0062"
+      ],
+      "text": "a👨‍👩‍👧‍👦b",
+      "width": 4,
+      "category": "emoji",
+      "why": "1 + 2 + 1: the cluster does not change the width of its neighbours."
+    },
+    {
+      "id": "zwj-between-letters",
+      "codepoints": [
+        "0061",
+        "200D",
+        "0062"
+      ],
+      "text": "a‍b",
+      "width": 2,
+      "category": "control",
+      "why": "A zero width joiner between two non-emoji letters adds no column."
+    },
+    {
+      "id": "zero-width-space",
+      "codepoints": [
+        "0061",
+        "200B",
+        "0062"
+      ],
+      "text": "a​b",
+      "width": 2,
+      "category": "control",
+      "why": "U+200B is zero width."
+    },
+    {
+      "id": "variation-selector-on-letter",
+      "codepoints": [
+        "0061",
+        "FE0F"
+      ],
+      "text": "a️",
+      "width": 1,
+      "category": "control",
+      "why": "A selector after a character with no emoji form changes nothing."
+    },
+    {
+      "id": "c0-control",
+      "codepoints": [
+        "0061",
+        "0000",
+        "0062"
+      ],
+      "text": null,
+      "width": 2,
+      "category": "control",
+      "why": "C0 controls occupy no column."
+    },
+    {
+      "id": "del",
+      "codepoints": [
+        "0061",
+        "007F",
+        "0062"
+      ],
+      "text": null,
+      "width": 2,
+      "category": "control",
+      "why": "U+007F occupies no column."
+    }
+  ],
+  "contested": [
+    {
+      "id": "ambiguous-arrow",
+      "codepoints": [
+        "2192"
+      ],
+      "text": "→",
+      "width_narrow": 1,
+      "width_east_asian": 2,
+      "category": "ambiguous",
+      "why": "East_Asian_Width=Ambiguous: one column in a Western locale, two in a CJK one."
+    },
+    {
+      "id": "ambiguous-circled-digit",
+      "codepoints": [
+        "2460"
+      ],
+      "text": "①",
+      "width_narrow": 1,
+      "width_east_asian": 2,
+      "category": "ambiguous",
+      "why": "Ambiguous, same as above."
+    },
+    {
+      "id": "keycap-sequence",
+      "codepoints": [
+        "0031",
+        "FE0F",
+        "20E3"
+      ],
+      "text": "1️⃣",
+      "width_narrow": 1,
+      "width_east_asian": 2,
+      "category": "ambiguous",
+      "why": "One cluster, but terminals disagree on whether the tile is one column or two."
+    },
+    {
+      "id": "soft-hyphen",
+      "codepoints": [
+        "0061",
+        "00AD",
+        "0062"
+      ],
+      "text": "a­b",
+      "width_narrow": 2,
+      "width_east_asian": 3,
+      "category": "ambiguous",
+      "why": "U+00AD is a format character that most terminals do not draw, but it is East_Asian_Width=Ambiguous rather than zero width, so implementations split between giving it no column and one."
+    }
+  ]
+}
