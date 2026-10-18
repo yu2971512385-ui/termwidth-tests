@@ -228,16 +228,6 @@
       "why": "Two regional indicators form one flag; UTS #51 gives the pair emoji presentation."
     },
     {
-      "id": "emoji-regional-indicator-lone",
-      "codepoints": [
-        "1F1EF"
-      ],
-      "text": "🇯",
-      "width": 2,
-      "category": "emoji",
-      "why": "A lone regional indicator is still drawn as an emoji letter tile."
-    },
-    {
       "id": "emoji-in-sentence",
       "codepoints": [
         "0061",
@@ -289,30 +279,6 @@
       "width": 1,
       "category": "control",
       "why": "A selector after a character with no emoji form changes nothing."
-    },
-    {
-      "id": "c0-control",
-      "codepoints": [
-        "0061",
-        "0000",
-        "0062"
-      ],
-      "text": null,
-      "width": 2,
-      "category": "control",
-      "why": "C0 controls occupy no column."
-    },
-    {
-      "id": "del",
-      "codepoints": [
-        "0061",
-        "007F",
-        "0062"
-      ],
-      "text": null,
-      "width": 2,
-      "category": "control",
-      "why": "U+007F occupies no column."
     }
   ],
   "contested": [
@@ -363,6 +329,43 @@
       "width_east_asian": 3,
       "category": "ambiguous",
       "why": "U+00AD is a format character that most terminals do not draw, but it is East_Asian_Width=Ambiguous rather than zero width, so implementations split between giving it no column and one."
+    },
+    {
+      "id": "c0-control",
+      "codepoints": [
+        "0061",
+        "0000",
+        "0062"
+      ],
+      "text": "a\u0000b",
+      "width_narrow": 2,
+      "width_east_asian": 3,
+      "category": "ambiguous",
+      "why": "A terminal may draw nothing for a C0 control or may draw a placeholder. unicode-width charges one column from its string API and none from its character API, a split its maintainers have settled on deliberately (unicode-rs/unicode-width#45, #87); uniseg and wcwidth charge none."
+    },
+    {
+      "id": "del",
+      "codepoints": [
+        "0061",
+        "007F",
+        "0062"
+      ],
+      "text": "ab",
+      "width_narrow": 2,
+      "width_east_asian": 3,
+      "category": "ambiguous",
+      "why": "U+007F splits the same way as the C0 controls."
+    },
+    {
+      "id": "emoji-regional-indicator-lone",
+      "codepoints": [
+        "1F1EF"
+      ],
+      "text": "🇯",
+      "width_narrow": 1,
+      "width_east_asian": 2,
+      "category": "ambiguous",
+      "why": "UTS #51 pairs regional indicators into a flag; alone, one is drawn as a letter tile by some terminals and as a narrow glyph by others, and the libraries split evenly."
     }
   ]
 }

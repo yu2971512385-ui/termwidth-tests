@@ -45,3 +45,7 @@ jobs:
         run: |
           npm install
           node run.mjs
+
+      - name: Rust
+        working-directory: runners/rust
+        run: cargo run

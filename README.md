@@ -9,7 +9,7 @@ flag, a heart followed by a variation selector. When two parts of one program
 answer differently — one deciding a column is too wide, another cutting it —
 the output comes out ragged.
 
-This repository is the question written down: 26 strings with the number of
+This repository is the question written down: 23 strings with the number of
 columns each should occupy, and the reason, in a form any language can read.
 
 ## The vectors
@@ -37,10 +37,20 @@ The rule the widths follow:
 > an East_Asian_Width of Wide or Fullwidth (UAX #11); 0 if it consists only of
 > zero-width characters; 1 otherwise.
 
-Four more cases live in a separate `contested` list, because terminals
-genuinely differ on them: the two East_Asian_Width=Ambiguous characters, the
-keycap sequence, and the soft hyphen. They are measured and printed, never
-scored. A project that wants to pin its own answer can score them itself.
+Seven more cases live in a separate `contested` list, because terminals and
+libraries genuinely differ on them: the two East_Asian_Width=Ambiguous
+characters, the keycap sequence, the soft hyphen, a C0 control, U+007F, and a
+lone regional indicator. They are measured and printed, never scored. A project
+that wants to pin its own answer can score them itself.
+
+The control characters earned their place. `unicode-width` charges them one
+column from `UnicodeWidthStr::width` and none from `UnicodeWidthChar::width`,
+which looks like an inconsistency until you find that its maintainers have
+settled the question deliberately and more than once
+([#45](https://github.com/unicode-rs/unicode-width/issues/45),
+[#87](https://github.com/unicode-rs/unicode-width/issues/87)); `uniseg` and
+`wcwidth` charge nothing. There is no reading of the standard that decides it,
+so scoring it would only have encoded a preference.
 
 ## What the libraries do
 
@@ -52,29 +62,42 @@ the runners report and exit 0.
 cd runners/go     && go run .
 cd runners/python && pip install rich wcwidth && python run.py
 cd runners/node   && npm install && node run.mjs
+cd runners/rust   && cargo run
 ```
 
-Failures out of the 26 scored vectors, measured on 2026-10-13:
+Failures out of the 23 scored vectors, measured on 2026-10-18:
 
 | implementation | version | failures |
 | --- | --- | ---: |
 | `uniseg.StringWidth` (Go) | rivo/uniseg 0.4.7 | **0** |
+| `UnicodeWidthStr::width` (Rust) | unicode-width 0.2.2 | **0** |
 | `displaywidth.String` (Go) | clipperhouse/displaywidth 0.10.0 | 1 |
-| `string-width` (JS) | 7.2.0 | 3 |
-| `rich.cell_len` (Python) | rich 15.0.0 | 3 |
-| `wcwidth.wcswidth` (Python) | wcwidth 0.9.2 | 3 |
-| `runewidth.StringWidth` (Go) | mattn/go-runewidth 0.0.16 | 5 |
+| `string-width` (JS) | 7.2.0 | 2 |
+| `rich.cell_len` (Python) | rich 15.0.0 | 2 |
+| `wcwidth.wcswidth` (Python) | wcwidth 0.9.2 | 2 |
+| `Intl.Segmenter` + East_Asian_Width (JS) | Node 26 | 2 |
+| `runewidth.StringWidth` (Go) | mattn/go-runewidth 0.0.16 | 4 |
+| summing `UnicodeWidthChar::width` per char | — | 6 |
 | `wcwidth` (JS) | 1.0.1 | 8 |
-| summing `runewidth.RuneWidth` per rune | — | 9 |
+| summing `runewidth.RuneWidth` per rune | — | 8 |
 | summing `displaywidth.Rune` per rune | — | 9 |
 
 Two things worth drawing out.
 
-**Summing per character is the common mistake.** The last two rows are not
-libraries, they are how libraries get used. `runewidth.StringWidth` fails five
+**Summing per character is the common mistake.** Three rows above are not
+libraries, they are how libraries get used. `runewidth.StringWidth` fails four
 vectors; walking the same string rune by rune and adding `RuneWidth` fails
-nine, because every rune of a ZWJ sequence is counted separately. A four-person
-family emoji comes out eight columns wide instead of two.
+eight, because every rune of a ZWJ sequence is counted separately. A four-person
+family emoji comes out eight columns wide instead of two. The same gap appears
+in Rust, where the string API fails nothing and the per-character one fails six.
+
+**The rule travels, not the language.** The Rust runner includes a deliberate
+reimplementation of go-runewidth's rule — walk grapheme clusters, charge each
+the width of its first non-zero-width character — and it fails the same four
+vectors in Rust that `runewidth.StringWidth` fails in Go: the two variation
+selector sequences, the rainbow flag, and the regional indicator pair. Nothing
+about Go caused those failures. Taking the first character's width is what
+caused them, and any language will reproduce it.
 
 **The selector matters in both directions.** `string-width` gives U+2764 two
 columns whether or not a variation selector follows it, so `❤` and `❤️` measure

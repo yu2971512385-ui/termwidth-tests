@@ -53,8 +53,6 @@ VECTORS = [
     ("emoji-regional-indicator-pair", [0x1F1EF, 0x1F1F5], 2, "emoji",
      "Two regional indicators form one flag; UTS #51 gives the pair emoji "
      "presentation."),
-    ("emoji-regional-indicator-lone", [0x1F1EF], 2, "emoji",
-     "A lone regional indicator is still drawn as an emoji letter tile."),
     ("emoji-in-sentence",
      [0x61, 0x1F468, 0x200D, 0x1F469, 0x200D, 0x1F467, 0x200D, 0x1F466, 0x62], 4, "emoji",
      "1 + 2 + 1: the cluster does not change the width of its neighbours."),
@@ -64,10 +62,6 @@ VECTORS = [
      "U+200B is zero width."),
     ("variation-selector-on-letter", [0x61, 0xFE0F], 1, "control",
      "A selector after a character with no emoji form changes nothing."),
-    ("c0-control", [0x61, 0x00, 0x62], 2, "control",
-     "C0 controls occupy no column."),
-    ("del", [0x61, 0x7F, 0x62], 2, "control",
-     "U+007F occupies no column."),
 ]
 
 # Cases where terminals legitimately differ. Reported, never scored.
@@ -84,6 +78,17 @@ CONTESTED = [
      "U+00AD is a format character that most terminals do not draw, but it is "
      "East_Asian_Width=Ambiguous rather than zero width, so implementations "
      "split between giving it no column and one."),
+    ("c0-control", [0x61, 0x00, 0x62], 2, 3, "ambiguous",
+     "A terminal may draw nothing for a C0 control or may draw a placeholder. "
+     "unicode-width charges one column from its string API and none from its "
+     "character API, a split its maintainers have settled on deliberately "
+     "(unicode-rs/unicode-width#45, #87); uniseg and wcwidth charge none."),
+    ("del", [0x61, 0x7F, 0x62], 2, 3, "ambiguous",
+     "U+007F splits the same way as the C0 controls."),
+    ("emoji-regional-indicator-lone", [0x1F1EF], 1, 2, "ambiguous",
+     "UTS #51 pairs regional indicators into a flag; alone, one is drawn as a "
+     "letter tile by some terminals and as a narrow glyph by others, and the "
+     "libraries split evenly."),
 ]
 
 RULE = (
