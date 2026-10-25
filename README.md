@@ -9,7 +9,7 @@ flag, a heart followed by a variation selector. When two parts of one program
 answer differently — one deciding a column is too wide, another cutting it —
 the output comes out ragged.
 
-This repository is the question written down: 23 strings with the number of
+This repository is the question written down: 22 strings with the number of
 columns each should occupy, and the reason, in a form any language can read.
 
 ## The vectors
@@ -37,11 +37,21 @@ The rule the widths follow:
 > an East_Asian_Width of Wide or Fullwidth (UAX #11); 0 if it consists only of
 > zero-width characters; 1 otherwise.
 
-Seven more cases live in a separate `contested` list, because terminals and
+Eight more cases live in a separate `contested` list, because terminals and
 libraries genuinely differ on them: the two East_Asian_Width=Ambiguous
-characters, the keycap sequence, the soft hyphen, a C0 control, U+007F, and a
-lone regional indicator. They are measured and printed, never scored. A project
-that wants to pin its own answer can score them itself.
+characters, the keycap sequence, the soft hyphen, a C0 control, U+007F, a lone
+regional indicator, and halfwidth katakana with a voiced sound mark. They are
+measured and printed, never scored. A project that wants to pin its own answer
+can score them itself.
+
+Halfwidth katakana is the newest of them, and it moved out of the scored set
+after `string-width` 8 deliberately changed its answer. `ｶﾞ` is one grapheme
+cluster, so measuring by cluster gives one column — but U+FF9E is a *spacing*
+modifier letter (`Lm`, canonical combining class 0), not a combining mark like
+its fullwidth counterpart U+3099, and in JIS X 0201 the dakuten occupied a cell
+of its own. `uniseg` and `unicode-width` charge one column; `wcwidth` and
+`string-width` charge two, the latter with a comment saying so. Both readings
+are defensible, which is what `contested` is for.
 
 The control characters earned their place. `unicode-width` charges them one
 column from `UnicodeWidthStr::width` and none from `UnicodeWidthChar::width`,
@@ -65,29 +75,33 @@ cd runners/node   && npm install && node run.mjs
 cd runners/rust   && cargo run
 ```
 
-Failures out of the 23 scored vectors, measured on 2026-10-18:
+Failures out of the 22 scored vectors, measured on 2026-10-25:
 
 | implementation | version | failures |
 | --- | --- | ---: |
 | `uniseg.StringWidth` (Go) | rivo/uniseg 0.4.7 | **0** |
 | `UnicodeWidthStr::width` (Rust) | unicode-width 0.2.2 | **0** |
+| `string-width` (JS) | 8.3.0 | **0** |
 | `displaywidth.String` (Go) | clipperhouse/displaywidth 0.10.0 | 1 |
-| `string-width` (JS) | 7.2.0 | 2 |
-| `rich.cell_len` (Python) | rich 15.0.0 | 2 |
-| `wcwidth.wcswidth` (Python) | wcwidth 0.9.2 | 2 |
+| `rich.cell_len` (Python) | rich 15.0.0 | 1 |
+| `wcwidth.wcswidth` (Python) | wcwidth 0.9.4 | 1 |
 | `Intl.Segmenter` + East_Asian_Width (JS) | Node 26 | 2 |
 | `runewidth.StringWidth` (Go) | mattn/go-runewidth 0.0.16 | 4 |
 | summing `UnicodeWidthChar::width` per char | — | 6 |
-| `wcwidth` (JS) | 1.0.1 | 8 |
-| summing `runewidth.RuneWidth` per rune | — | 8 |
-| summing `displaywidth.Rune` per rune | — | 9 |
+| summing `runewidth.RuneWidth` per rune | — | 7 |
+| `wcwidth` (JS) | 1.0.1 | 7 |
+| summing `displaywidth.Rune` per rune | — | 8 |
+
+`string-width` was at 2 failures on 7.2.0 when this table was first written; 8.x
+fixed both. That is the table doing its job, and the reason the version column
+is there.
 
 Two things worth drawing out.
 
 **Summing per character is the common mistake.** Three rows above are not
 libraries, they are how libraries get used. `runewidth.StringWidth` fails four
 vectors; walking the same string rune by rune and adding `RuneWidth` fails
-eight, because every rune of a ZWJ sequence is counted separately. A four-person
+seven, because every rune of a ZWJ sequence is counted separately. A four-person
 family emoji comes out eight columns wide instead of two. The same gap appears
 in Rust, where the string API fails nothing and the per-character one fails six.
 

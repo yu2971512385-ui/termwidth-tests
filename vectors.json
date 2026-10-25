@@ -101,17 +101,6 @@
       "why": "East_Asian_Width=Fullwidth."
     },
     {
-      "id": "cjk-halfwidth-kana",
-      "codepoints": [
-        "FF76",
-        "FF9E"
-      ],
-      "text": "ｶﾞ",
-      "width": 1,
-      "category": "east-asian",
-      "why": "U+FF9E is Grapheme_Extend, so it joins the halfwidth katakana before it into one cluster; that cluster starts Halfwidth, so one column."
-    },
-    {
       "id": "hangul-jamo-composing",
       "codepoints": [
         "1100",
@@ -355,6 +344,18 @@
       "width_east_asian": 3,
       "category": "ambiguous",
       "why": "U+007F splits the same way as the C0 controls."
+    },
+    {
+      "id": "cjk-halfwidth-kana",
+      "codepoints": [
+        "FF76",
+        "FF9E"
+      ],
+      "text": "ｶﾞ",
+      "width_narrow": 1,
+      "width_east_asian": 2,
+      "category": "ambiguous",
+      "why": "U+FF9E joins the halfwidth katakana before it into one grapheme cluster, but unlike the fullwidth U+3099 it is a spacing modifier letter (Lm, canonical combining class 0) rather than a combining mark, and in JIS X 0201 the dakuten occupied its own cell. uniseg and unicode-width charge one column for the cluster; wcwidth and string-width charge one for each character."
     },
     {
       "id": "emoji-regional-indicator-lone",

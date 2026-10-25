@@ -28,9 +28,6 @@ VECTORS = [
      "Precomposed Hangul syllables are Wide."),
     ("cjk-fullwidth-latin", [0xFF46, 0xFF57], 4, "east-asian",
      "East_Asian_Width=Fullwidth."),
-    ("cjk-halfwidth-kana", [0xFF76, 0xFF9E], 1, "east-asian",
-     "U+FF9E is Grapheme_Extend, so it joins the halfwidth katakana before it "
-     "into one cluster; that cluster starts Halfwidth, so one column."),
     ("hangul-jamo-composing", [0x1100, 0x1161, 0x11A8], 2, "east-asian",
      "The leading jamo is Wide; the medial and trailing jamo compose onto it."),
     ("emoji-presentation-default", [0x1F4A1], 2, "emoji",
@@ -85,6 +82,13 @@ CONTESTED = [
      "(unicode-rs/unicode-width#45, #87); uniseg and wcwidth charge none."),
     ("del", [0x61, 0x7F, 0x62], 2, 3, "ambiguous",
      "U+007F splits the same way as the C0 controls."),
+    ("cjk-halfwidth-kana", [0xFF76, 0xFF9E], 1, 2, "ambiguous",
+     "U+FF9E joins the halfwidth katakana before it into one grapheme cluster, "
+     "but unlike the fullwidth U+3099 it is a spacing modifier letter (Lm, "
+     "canonical combining class 0) rather than a combining mark, and in JIS X "
+     "0201 the dakuten occupied its own cell. uniseg and unicode-width charge "
+     "one column for the cluster; wcwidth and string-width charge one for each "
+     "character."),
     ("emoji-regional-indicator-lone", [0x1F1EF], 1, 2, "ambiguous",
      "UTS #51 pairs regional indicators into a flag; alone, one is drawn as a "
      "letter tile by some terminals and as a narrow glyph by others, and the "
